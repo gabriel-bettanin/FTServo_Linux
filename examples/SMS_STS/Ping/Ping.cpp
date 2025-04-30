@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
   std::cout << "Pinging IDs..." << std::endl;
   for (int i = 1; i < 10; i++)
   {
-    if (servo_bus.Ping(i) != -1)
+    if (servo_bus.ping(i) != -1)
     {
       std::cout << "Found ID: " << i << std::endl;
     }

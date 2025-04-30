@@ -26,15 +26,15 @@ int main(int argc, char ** argv)
     int move;
     int current;
 
-    if (servo_bus.FeedBack(1) != -1)
+    if (servo_bus.feedback(1) != -1)
     {
-      position = servo_bus.ReadPos(-1);
-      speed = servo_bus.ReadSpeed(-1);
-      load = servo_bus.ReadLoad(-1);
-      voltage = servo_bus.ReadVoltage(-1);
-      temperature = servo_bus.ReadTemper(-1);
-      move = servo_bus.ReadMove(-1);
-      current = servo_bus.ReadCurrent(-1);
+      position = servo_bus.readPos(-1);
+      speed = servo_bus.readSpeed(-1);
+      load = servo_bus.readLoad(-1);
+      voltage = servo_bus.readVoltage(-1);
+      temperature = servo_bus.readTemperature(-1);
+      move = servo_bus.readMove(-1);
+      current = servo_bus.readCurrent(-1);
 
       std::cout << "position = " << position << " ";
       std::cout << "speed = " << speed << " ";

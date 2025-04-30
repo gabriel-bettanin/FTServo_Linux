@@ -1,29 +1,28 @@
 ﻿/*
  * SCSCL.h
- * 飞特SCSCL系列串行舵机应用层程序
- * 日期: 2020.6.17
- * 作者: 
+ * Feit SCSCL series serial servo application layer program
+ * Date: 2020.6.17
+ * Author.
  */
 
 #ifndef _SCSCL_H
 #define _SCSCL_H
 
+#define SCSCL_1M 0
+#define SCSCL_0_5M 1
+#define SCSCL_250K 2
+#define SCSCL_128K 3
+#define SCSCL_115200 4
+#define SCSCL_76800 5
+#define SCSCL_57600 6
+#define SCSCL_38400 7
 
-#define	SCSCL_1M 0
-#define	SCSCL_0_5M 1
-#define	SCSCL_250K 2
-#define	SCSCL_128K 3
-#define	SCSCL_115200 4
-#define	SCSCL_76800	5
-#define	SCSCL_57600	6
-#define	SCSCL_38400	7
-
-//内存表定义
-//-------EPROM(只读)--------
+// Memory table definition
+//-------EPROM (Read-only)--------
 #define SCSCL_VERSION_L 3
 #define SCSCL_VERSION_H 4
 
-//-------EPROM(读写)--------
+//-------EPROM(Read/Write)--------
 #define SCSCL_ID 5
 #define SCSCL_BAUD_RATE 6
 #define SCSCL_MIN_ANGLE_LIMIT_L 9
@@ -33,7 +32,7 @@
 #define SCSCL_CW_DEAD 26
 #define SCSCL_CCW_DEAD 27
 
-//-------SRAM(读写)--------
+//-------SRAM(Read/Write)--------
 #define SCSCL_TORQUE_ENABLE 40
 #define SCSCL_GOAL_POSITION_L 42
 #define SCSCL_GOAL_POSITION_H 43
@@ -43,7 +42,7 @@
 #define SCSCL_GOAL_SPEED_H 47
 #define SCSCL_LOCK 48
 
-//-------SRAM(只读)--------
+//-------SRAM(Read-only)--------
 #define SCSCL_PRESENT_POSITION_L 56
 #define SCSCL_PRESENT_POSITION_H 57
 #define SCSCL_PRESENT_SPEED_L 58
@@ -61,27 +60,27 @@
 class SCSCL : public SCSerial
 {
 public:
-	SCSCL();
-	SCSCL(u8 End);
-	SCSCL(u8 End, u8 Level);
-	virtual int WritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);//普通写单个舵机位置指令
-	virtual int RegWritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);//异步写单个舵机位置指令(RegWriteAction生效)
-	virtual void SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[]);//同步写多个舵机位置指令
-	virtual int PWMMode(u8 ID);//PWM输出模式
-	virtual int WritePWM(u8 ID, s16 pwmOut);//PWM输出模式指令
-	virtual int EnableTorque(u8 ID, u8 Enable);//扭矩控制指令
-	virtual int unLockEprom(u8 ID);//eprom解锁
-	virtual int LockEprom(u8 ID);//eprom加锁
-	virtual int FeedBack(int ID);//反馈舵机信息
-	virtual int ReadPos(int ID);//读位置
-	virtual int ReadSpeed(int ID);//读速度
-	virtual int ReadLoad(int ID);//读输出至电机的电压百分比(0~1000)
-	virtual int ReadVoltage(int ID);//读电压
-	virtual int ReadTemper(int ID);//读温度
-	virtual int ReadMove(int ID);//读移动状态
-	virtual int ReadCurrent(int ID);//读电流
+  SCSCL();
+  SCSCL(u8 End);
+  SCSCL(u8 End, u8 Level);
+  virtual int writePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);                   // Write position command for a single servo
+  virtual int regWritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);                // Asynchronous write position command for a single servo (takes effect with RegWriteAction)
+  virtual void syncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[]);  // Synchronous write position command for multiple servos
+  virtual int pwmMode(u8 ID);                                                           // Set PWM output mode
+  virtual int writePWM(u8 ID, s16 pwmOut);                                              // Command for PWM output mode
+  virtual int enableTorque(u8 ID, u8 Enable);                                           // Torque control command
+  virtual int unlockEprom(u8 ID);                                                       // Unlock EEPROM
+  virtual int lockEprom(u8 ID);                                                         // Lock EEPROM
+  virtual int feedback(int ID);                                                         // Get feedback from servo
+  virtual int readPos(int ID);                                                          // Read position
+  virtual int readSpeed(int ID);                                                        // Read speed
+  virtual int readLoad(int ID);                                                         // Read load (percentage of voltage output to motor, 0~1000)
+  virtual int readVoltage(int ID);                                                      // Read voltage
+  virtual int readTemperature(int ID);                                                  // Read temperature
+  virtual int readMove(int ID);                                                         // Read movement state
+  virtual int readCurrent(int ID);                                                      // Read current
 private:
-	u8 Mem[SCSCL_PRESENT_CURRENT_H-SCSCL_PRESENT_POSITION_L+1];
+  u8 Mem[SCSCL_PRESENT_CURRENT_H - SCSCL_PRESENT_POSITION_L + 1];
 };
 
 #endif

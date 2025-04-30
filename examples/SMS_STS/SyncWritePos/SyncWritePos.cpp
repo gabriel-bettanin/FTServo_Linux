@@ -32,14 +32,14 @@ int main(int argc, char ** argv)
     // Servo (ids1/ids2) running at maximum speed V=2400 (steps/sec), acceleration A=50 (50*100 steps/sec^2) to position P1=4095
     position[0] = 4095;
     position[1] = 4095;
-    servo_bus.SyncWritePosEx(ids, sizeof(ids), position, speed, acceleration);
+    servo_bus.syncWritePosEx(ids, sizeof(ids), position, speed, acceleration);
     std::cout << "pos = " << 4095 << std::endl;
     usleep(2187 * 1000);  //[(P1-P0)/V]*1000+[V/(A*100)]*1000
 
     //Servo (ids1/ids2) running at maximum speed V=2400 (steps/sec), acceleration A=50 (50*100 steps/sec^2), to position P0=0
     position[0] = 0;
     position[1] = 0;
-    servo_bus.SyncWritePosEx(ids, sizeof(ids), position, speed, acceleration);
+    servo_bus.syncWritePosEx(ids, sizeof(ids), position, speed, acceleration);
     std::cout << "pos = " << 0 << std::endl;
     usleep(2187 * 1000);  //[(P1-P0)/V]*1000+[V/(A*100)]*1000
   }

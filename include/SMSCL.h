@@ -1,29 +1,28 @@
 /*
  * SMSCL.h
- * ·ÉÌØSMSCLÏµÁÐ´®ÐÐ¶æ»ú½Ó¿Ú
- * ÈÕÆÚ: 2020.6.17
- * ×÷Õß: 
+ * ï¿½ï¿½ï¿½ï¿½SMSCLÏµï¿½Ð´ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½Ó¿ï¿½
+ * ï¿½ï¿½ï¿½ï¿½: 2020.6.17
+ * ï¿½ï¿½ï¿½ï¿½: 
  */
 
 #ifndef _SMSCL_H
 #define _SMSCL_H
 
+#define SMSCL_1M 0
+#define SMSCL_0_5M 1
+#define SMSCL_250K 2
+#define SMSCL_128K 3
+#define SMSCL_115200 4
+#define SMSCL_76800 5
+#define SMSCL_57600 6
+#define SMSCL_38400 7
 
-#define	SMSCL_1M 0
-#define	SMSCL_0_5M 1
-#define	SMSCL_250K 2
-#define	SMSCL_128K 3
-#define	SMSCL_115200 4
-#define	SMSCL_76800	5
-#define	SMSCL_57600	6
-#define	SMSCL_38400	7
-
-//ÄÚ´æ±í¶¨Òå
-//-------EPROM(Ö»¶Á)--------
+// Memory table definitions
+//-------EPROM(Read-only)--------
 #define SMSCL_VERSION_L 3
 #define SMSCL_VERSION_H 4
 
-//-------EPROM(¶ÁÐ´)--------
+// -------EPROM (Read/Write)--------
 #define SMSCL_ID 5
 #define SMSCL_BAUD_RATE 6
 #define SMSCL_RETURN_DELAY_TIME 7
@@ -50,9 +49,9 @@
 #define SMSCL_OFS_H 34
 #define SMSCL_MODE 35
 #define SMSCL_MAX_CURRENT_L 36
-#define SMSCL_MAX_CURRENT_H 37	
+#define SMSCL_MAX_CURRENT_H 37
 
-//-------SRAM(¶ÁÐ´)--------
+// -------SRAM (Read/Write)--------
 #define SMSCL_TORQUE_ENABLE 40
 #define SMSCL_ACC 41
 #define SMSCL_GOAL_POSITION_L 42
@@ -63,7 +62,7 @@
 #define SMSCL_GOAL_SPEED_H 47
 #define SMSCL_LOCK 48
 
-//-------SRAM(Ö»¶Á)--------
+// -------SRAM (Read-only)--------
 #define SMSCL_PRESENT_POSITION_L 56
 #define SMSCL_PRESENT_POSITION_H 57
 #define SMSCL_PRESENT_SPEED_L 58
@@ -82,28 +81,28 @@
 class SMSCL : public SCSerial
 {
 public:
-	SMSCL();
-	SMSCL(u8 End);
-	SMSCL(u8 End, u8 Level);
-	virtual int WritePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);//ÆÕÍ¨Ð´µ¥¸ö¶æ»úÎ»ÖÃÖ¸Áî
-	virtual int RegWritePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);//Òì²½Ð´µ¥¸ö¶æ»úÎ»ÖÃÖ¸Áî(RegWriteActionÉúÐ§)
-	virtual void SyncWritePosEx(u8 ID[], u8 IDN, s16 Position[], u16 Speed[], u8 ACC[]);//Í¬²½Ð´¶à¸ö¶æ»úÎ»ÖÃÖ¸Áî
-	virtual int WheelMode(u8 ID);//ºãËÙÄ£Ê½
-	virtual int WriteSpe(u8 ID, s16 Speed, u8 ACC = 0);//ºãËÙÄ£Ê½¿ØÖÆÖ¸Áî
-	virtual int EnableTorque(u8 ID, u8 Enable);//Å¤Á¦¿ØÖÆÖ¸Áî
-	virtual int unLockEprom(u8 ID);//eprom½âËø
-	virtual int LockEprom(u8 ID);//eprom¼ÓËø
-	virtual int CalibrationOfs(u8 ID);//ÖÐÎ»Ð£×¼
-	virtual int FeedBack(int ID);//·´À¡¶æ»úÐÅÏ¢
-	virtual int ReadPos(int ID);//¶ÁÎ»ÖÃ
-	virtual int ReadSpeed(int ID);//¶ÁËÙ¶È
-	virtual int ReadLoad(int ID);//¶ÁÊä³öÖÁµç»úµÄµçÑ¹°Ù·Ö±È(0~1000)
-	virtual int ReadVoltage(int ID);//¶ÁµçÑ¹
-	virtual int ReadTemper(int ID);//¶ÁÎÂ¶È
-	virtual int ReadMove(int ID);////¶ÁÒÆ¶¯×´Ì¬
-	virtual int ReadCurrent(int ID);//¶ÁµçÁ÷
+  SMSCL();
+  SMSCL(u8 End);
+  SMSCL(u8 End, u8 Level);
+  virtual int writePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);                   // Standard write position command for a single servo
+  virtual int regWritePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);                // Asynchronous write position command for a single servo (effective with RegWriteAction)
+  virtual void syncWritePosEx(u8 ID[], u8 IDN, s16 Position[], u16 Speed[], u8 ACC[]);  // Synchronous write position command for multiple servos
+  virtual int wheelMode(u8 ID);                                                         // Wheel (continuous rotation) mode
+  virtual int writeSpeed(u8 ID, s16 Speed, u8 ACC = 0);                                 // Speed control command in wheel mode
+  virtual int enableTorque(u8 ID, u8 Enable);                                           // Torque control command
+  virtual int unlockEprom(u8 ID);                                                       // Unlock EEPROM
+  virtual int lockEprom(u8 ID);                                                         // Lock EEPROM
+  virtual int calibrationOfs(u8 ID);                                                    // Center offset calibration
+  virtual int feedback(int ID);                                                         // Get feedback from servo
+  virtual int readPos(int ID);                                                          // Read position
+  virtual int readSpeed(int ID);                                                        // Read speed
+  virtual int readLoad(int ID);                                                         // Read load (percentage of voltage output to motor, 0â€“1000)
+  virtual int readVoltage(int ID);                                                      // Read voltage
+  virtual int readTemperature(int ID);                                                  // Read temperature
+  virtual int readMove(int ID);                                                         // Read movement status
+  virtual int readCurrent(int ID);                                                      // Read current
 private:
-	u8 Mem[SMSCL_PRESENT_CURRENT_H-SMSCL_PRESENT_POSITION_L+1];
+  u8 Mem[SMSCL_PRESENT_CURRENT_H - SMSCL_PRESENT_POSITION_L + 1];
 };
 
 #endif

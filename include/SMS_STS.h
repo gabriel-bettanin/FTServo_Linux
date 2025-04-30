@@ -1,29 +1,29 @@
 ﻿/*
  * SMS_STS.h
- * 飞特SMS/STS系列串行舵机应用层程序
- * 日期: 2021.12.8
- * 作者: 
+ * Feit SMS/STS series serial servo application layer program
+ * Date: 2021.12.8
+ * Author.
  */
 
 #ifndef _SMS_STS_H
 #define _SMS_STS_H
 
-//波特率定义
-#define	SMS_STS_1M 0
-#define	SMS_STS_0_5M 1
-#define	SMS_STS_250K 2
-#define	SMS_STS_128K 3
-#define	SMS_STS_115200 4
-#define	SMS_STS_76800 5
-#define	SMS_STS_57600 6
-#define	SMS_STS_38400 7
+// Baud rate definitions
+#define SMS_STS_1M 0
+#define SMS_STS_0_5M 1
+#define SMS_STS_250K 2
+#define SMS_STS_128K 3
+#define SMS_STS_115200 4
+#define SMS_STS_76800 5
+#define SMS_STS_57600 6
+#define SMS_STS_38400 7
 
-//内存表定义
-//-------EPROM(只读)--------
+// Memory table definitions
+//-------EPROM(Read-only)--------
 #define SMS_STS_MODEL_L 3
 #define SMS_STS_MODEL_H 4
 
-//-------EPROM(读写)--------
+// -------EPROM (Read/Write)--------
 #define SMS_STS_ID 5
 #define SMS_STS_BAUD_RATE 6
 #define SMS_STS_MIN_ANGLE_LIMIT_L 9
@@ -36,7 +36,7 @@
 #define SMS_STS_OFS_H 32
 #define SMS_STS_MODE 33
 
-//-------SRAM(读写)--------
+// -------SRAM (Read/Write)--------
 #define SMS_STS_TORQUE_ENABLE 40
 #define SMS_STS_ACC 41
 #define SMS_STS_GOAL_POSITION_L 42
@@ -47,7 +47,7 @@
 #define SMS_STS_GOAL_SPEED_H 47
 #define SMS_STS_LOCK 55
 
-//-------SRAM(只读)--------
+// -------SRAM (Read-only)--------
 #define SMS_STS_PRESENT_POSITION_L 56
 #define SMS_STS_PRESENT_POSITION_H 57
 #define SMS_STS_PRESENT_SPEED_L 58
@@ -65,28 +65,28 @@
 class SMS_STS : public SCSerial
 {
 public:
-	SMS_STS();
-	SMS_STS(u8 End);
-	SMS_STS(u8 End, u8 Level);
-	virtual int WritePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);//普通写单个舵机位置指令
-	virtual int RegWritePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);//异步写单个舵机位置指令(RegWriteAction生效)
-	virtual void SyncWritePosEx(u8 ID[], u8 IDN, s16 Position[], u16 Speed[], u8 ACC[]);//同步写多个舵机位置指令
-	virtual int WheelMode(u8 ID);//恒速模式
-	virtual int WriteSpe(u8 ID, s16 Speed, u8 ACC = 0);//恒速模式控制指令
-	virtual int EnableTorque(u8 ID, u8 Enable);//扭力控制指令
-	virtual int unLockEprom(u8 ID);//eprom解锁
-	virtual int LockEprom(u8 ID);//eprom加锁
-	virtual int CalibrationOfs(u8 ID);//中位校准
-	virtual int FeedBack(int ID);//反馈舵机信息
-	virtual int ReadPos(int ID);//读位置
-	virtual int ReadSpeed(int ID);//读速度
-	virtual int ReadLoad(int ID);//读输出至电机的电压百分比(0~1000)
-	virtual int ReadVoltage(int ID);//读电压
-	virtual int ReadTemper(int ID);//读温度
-	virtual int ReadMove(int ID);//读移动状态
-	virtual int ReadCurrent(int ID);//读电流
+  SMS_STS();
+  SMS_STS(u8 End);
+  SMS_STS(u8 End, u8 Level);
+  virtual int writePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);                   // Standard write position command for a single servo
+  virtual int regWritePosEx(u8 ID, s16 Position, u16 Speed, u8 ACC = 0);                // Asynchronous write position command for a single servo (requires RegWriteAction)
+  virtual void syncWritePosEx(u8 ID[], u8 IDN, s16 Position[], u16 Speed[], u8 ACC[]);  // Synchronous write position command for multiple servos
+  virtual int wheelMode(u8 ID);                                                         // Constant speed mode
+  virtual int writeSpeed(u8 ID, s16 Speed, u8 ACC = 0);                                 // Command to control speed in constant speed mode
+  virtual int enableTorque(u8 ID, u8 Enable);                                           // Torque control command
+  virtual int unlockEprom(u8 ID);                                                       // Unlock EEPROM
+  virtual int lockEprom(u8 ID);                                                         // Lock EEPROM
+  virtual int calibrationOfs(u8 ID);                                                    // Center offset calibration
+  virtual int feedback(int ID);                                                         // Feedback from servo
+  virtual int readPos(int ID);                                                          // Read position
+  virtual int readSpeed(int ID);                                                        // Read speed
+  virtual int readLoad(int ID);                                                         // Read load (percentage of voltage output to motor, 0–1000)
+  virtual int readVoltage(int ID);                                                      // Read voltage
+  virtual int readTemperature(int ID);                                                  // Read temperature
+  virtual int readMove(int ID);                                                         // Read movement state
+  virtual int readCurrent(int ID);                                                      // Read current
 private:
-	u8 Mem[SMS_STS_PRESENT_CURRENT_H-SMS_STS_PRESENT_POSITION_L+1];
+  u8 Mem[SMS_STS_PRESENT_CURRENT_H - SMS_STS_PRESENT_POSITION_L + 1];
 };
 
 #endif
