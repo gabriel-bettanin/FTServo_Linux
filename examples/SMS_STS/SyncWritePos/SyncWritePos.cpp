@@ -1,42 +1,49 @@
 /*
-舵机出厂速度单位是0.0146rpm，速度改为V=2400
+Servo factory speed unit is 0.0146rpm, speed changed to V=2400
 */
 
 #include <iostream>
 #include "SCServo.h"
 
-SMS_STS sm_st;
+SMS_STS servo_bus;
 
-u8 ID[2] = {1, 2};
-s16 Position[2];
-u16 Speed[2] = {2400, 2400};
-u8 ACC[2] = {50, 50};
+u8 ids[3] = {1, 2, 3};
+s16 position[2];
+u16 speed[2] = {2400, 2400};
+u8 acceleration[2] = {50, 50};
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
-	if(argc<2){
-        std::cout<<"argc error!"<<std::endl;
-        return 0;
-	}
-	std::cout<<"serial:"<<argv[1]<<std::endl;
-    if(!sm_st.begin(115200, argv[1])){
-        std::cout<<"Failed to init sms/sts motor!"<<std::endl;
-        return 0;
-    }
-	while(1){
-		Position[0] = 4095;
-		Position[1] = 4095;
-		sm_st.SyncWritePosEx(ID, sizeof(ID), Position, Speed, ACC);//舵机(ID1/ID2)以最高速度V=2400(步/秒)，加速度A=50(50*100步/秒^2)，运行至P1=4095位置
-		std::cout<<"pos = "<<4095<<std::endl;
-		usleep(2187*1000);//[(P1-P0)/V]*1000+[V/(A*100)]*1000
-  
-		Position[0] = 0;
-		Position[1] = 0;
-		sm_st.SyncWritePosEx(ID, sizeof(ID), Position, Speed, ACC);//舵机(ID1/ID2)以最高速度V=2400(步/秒)，加速度A=50(50*100步/秒^2)，运行至P0=0位置
-		std::cout<<"pos = "<<0<<std::endl;
-		usleep(2187*1000);//[(P1-P0)/V]*1000+[V/(A*100)]*1000
-	}
-	sm_st.end();
-	return 1;
-}
+  if (argc < 2)
+  {
+    std::cout << "argc error!" << std::endl;
+    return 0;
+  }
+  std::cout << "serial:" << argv[1] << std::endl;
 
+  if (!servo_bus.begin(1000000, argv[1]))
+  {
+    std::cout << "Failed to init sms/sts motor!" << std::endl;
+    return 0;
+  }
+
+  while (1)
+  {
+    // Servo (ids1/ids2) running at maximum speed V=2400 (steps/sec), acceleration A=50 (50*100 steps/sec^2) to position P1=4095
+    position[0] = 4095;
+    position[1] = 4095;
+    servo_bus.SyncWritePosEx(ids, sizeof(ids), position, speed, acceleration);
+    std::cout << "pos = " << 4095 << std::endl;
+    usleep(2187 * 1000);  //[(P1-P0)/V]*1000+[V/(A*100)]*1000
+
+    //Servo (ids1/ids2) running at maximum speed V=2400 (steps/sec), acceleration A=50 (50*100 steps/sec^2), to position P0=0
+    position[0] = 0;
+    position[1] = 0;
+    servo_bus.SyncWritePosEx(ids, sizeof(ids), position, speed, acceleration);
+    std::cout << "pos = " << 0 << std::endl;
+    usleep(2187 * 1000);  //[(P1-P0)/V]*1000+[V/(A*100)]*1000
+  }
+
+  servo_bus.end();
+  return 1;
+}

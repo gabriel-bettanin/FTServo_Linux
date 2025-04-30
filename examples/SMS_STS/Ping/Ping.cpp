@@ -1,29 +1,36 @@
-/*
-Ping指令测试,测试总线上相应ID舵机是否就绪,广播指令只适用于总线只有一个舵机情况
+/* 
+Ping command test, test whether the corresponding ID servo on the bus is ready, the broadcast command only applies to only one servo on the bus.
 */
 
 #include <iostream>
 #include "SCServo.h"
 
-SMS_STS sm_st;
+SMS_STS servo_bus;
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
-	if(argc<2){
-        std::cout<<"argc error!"<<std::endl;
-        return 0;
-	}
-	std::cout<<"serial:"<<argv[1]<<std::endl;
-    if(!sm_st.begin(115200, argv[1])){
-        std::cout<<"Failed to init sms/sts motor!"<<std::endl;
-        return 0;
+  if (argc < 2)
+  {
+    std::cout << "argc error!" << std::endl;
+    return 0;
+  }
+
+  std::cout << "Serial port:" << argv[1] << std::endl;
+  if (!servo_bus.begin(1000000, argv[1]))
+  {
+    std::cout << "Failed to init sms/sts motor!" << std::endl;
+    return 0;
+  }
+
+  std::cout << "Pinging IDs..." << std::endl;
+  for (int i = 1; i < 10; i++)
+  {
+    if (servo_bus.Ping(i) != -1)
+    {
+      std::cout << "Found ID: " << i << std::endl;
     }
-	int ID = sm_st.Ping(1);
-	if(ID!=-1){
-		std::cout<<"ID:"<<ID<<std::endl;
-	}else{
-		std::cout<<"Ping servo ID error!"<<std::endl;
-	}
-	sm_st.end();
-	return 1;
+  }
+
+  servo_bus.end();
+  return 1;
 }

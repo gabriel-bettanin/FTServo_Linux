@@ -1,44 +1,50 @@
-/*
-同步读指令，回读ID1与ID2两个舵机的位置与速度信息
+/* 
+Synchronized read command to read back the position and velocity information of both servos ID1 and ID2
 */
 
 #include <iostream>
 #include "SCServo.h"
 
-SMS_STS sm_st;
-uint8_t ID[] = {1, 2};
-uint8_t rxPacket[4];
-int16_t Position;
-int16_t Speed;
+SMS_STS servo_bus;
+uint8_t ids[] = {1, 2, 3};
+uint8_t rx_packet[4];
+int16_t position, speed;
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
-	if(argc<2){
-        std::cout<<"argc error!"<<std::endl;
-        return 0;
-	}
-	std::cout<<"serial:"<<argv[1]<<std::endl;
-    if(!sm_st.begin(115200, argv[1])){
-        std::cout<<"Failed to init sms/sts motor!"<<std::endl;
-        return 0;
-    }
-	sm_st.syncReadBegin(sizeof(ID), sizeof(rxPacket));
-	while(1){
-		sm_st.syncReadPacketTx(ID, sizeof(ID), SMS_STS_PRESENT_POSITION_L, sizeof(rxPacket));//同步读指令包发送
-		for(uint8_t i=0; i<sizeof(ID); i++){
-			//接收ID[i]同步读返回包
-			if(!sm_st.syncReadPacketRx(ID[i], rxPacket)){
-				std::cout<<"ID:"<<(int)ID[i]<<" sync read error!"<<std::endl;
-				continue;//接收解码失败
-			}
-			Position = sm_st.syncReadRxPacketToWrod(15);//解码两个字节 bit15为方向位,参数=0表示无方向位
-			Speed = sm_st.syncReadRxPacketToWrod(15);//解码两个字节 bit15为方向位,参数=0表示无方向位
-			std::cout<<"ID:"<<int(ID[i])<<" Position:"<<Position<<" Speed:"<<Speed<<std::endl;
-		}
-		usleep(10*1000);
-	}
-	sm_st.syncReadEnd();
-	sm_st.end();
-	return 1;
-}
+  if (argc < 2)
+  {
+    std::cout << "argc error!" << std::endl;
+    return 0;
+  }
+  std::cout << "serial:" << argv[1] << std::endl;
 
+  if (!servo_bus.begin(1000000, argv[1]))
+  {
+    std::cout << "Failed to init sms/sts motor!" << std::endl;
+    return 0;
+  }
+  servo_bus.syncReadBegin(sizeof(ids), sizeof(rx_packet));
+
+  while (1)
+  {
+    servo_bus.syncReadPacketTx(ids, sizeof(ids), SMS_STS_PRESENT_POSITION_L, sizeof(rx_packet));  //同步读指令包发送
+    for (uint8_t i = 0; i < sizeof(ids); i++)
+    {
+      // Receive ID[i] synchronized read return packet
+      if (!servo_bus.syncReadPacketRx(ids[i], rx_packet))
+      {
+        std::cout << "ID:" << (int)ids[i] << " sync read error!" << std::endl;
+        continue;  // Receive decoding failure
+      }
+      position = servo_bus.syncReadRxPacketToWrod(15);  // Decode two bytes bit15 is direction bit, parameter = 0 means no direction bit.
+      speed = servo_bus.syncReadRxPacketToWrod(15);     // Decode two bytes bit15 is direction bit, parameter = 0 means no direction bit.
+      std::cout << "ID:" << int(ids[i]) << " Position:" << position << " Speed:" << speed << std::endl;
+    }
+    usleep(1 * 1000);
+  }
+
+  servo_bus.syncReadEnd();
+  servo_bus.end();
+  return 1;
+}
